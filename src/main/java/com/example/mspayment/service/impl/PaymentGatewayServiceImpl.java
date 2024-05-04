@@ -64,6 +64,7 @@ public class PaymentGatewayServiceImpl implements PaymentGatewayService {
         BookingDTO booking = bookingClient.getBookingById(payment.getBookingId());
         FlightDTO flight = bookingClient.getFlightById(booking.getFlightId());
         RegisteredCustomerDTO customer = customerClient.getCustomerById(booking.getCustomerId());
+        payment.setPaymentStatus(false);
 
         updateCustomerBalance(customer.getId(),flight.getAmount() * 0.25f, "+");
 
