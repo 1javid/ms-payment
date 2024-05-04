@@ -8,6 +8,9 @@ import com.example.mspayment.repository.PaymentGatewayRepository;
 import com.example.mspayment.service.PaymentGatewayService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class PaymentGatewayServiceImpl implements PaymentGatewayService {
 
@@ -33,29 +36,31 @@ public class PaymentGatewayServiceImpl implements PaymentGatewayService {
     }
 
     @Override
-    public PaymentGateway initiatePayment(Long paymentId) {
-        PaymentGateway payment = paymentGatewayRepository.findById(paymentId)
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
-        BookingDTO booking = bookingClient.getBookingById(payment.getBookingId());
-        System.out.println(booking);
-        FlightDTO flight = bookingClient.getFlightById(booking.getFlightId());
-        System.out.println(flight);
-        RegisteredCustomerDTO customer = customerClient.getCustomerById(booking.getCustomerId());
-        System.out.println(customer);
+    public List<PaymentGateway> initiatePayment(List<Long> paymentIds) {
+        List<PaymentGateway> payments = new ArrayList<>();
+        for(Long paymentId: paymentIds) {
+            PaymentGateway payment = paymentGatewayRepository.findById(paymentId)
+                    .orElseThrow(() -> new RuntimeException("Payment not found"));
+            BookingDTO booking = bookingClient.getBookingById(payment.getBookingId());
+            FlightDTO flight = bookingClient.getFlightById(booking.getFlightId());
+            RegisteredCustomerDTO customer = customerClient.getCustomerById(booking.getCustomerId());
 
-        if (flight.getAmount() == null) {
-            throw new IllegalStateException("Flight cost is missing.");
+            if (flight.getAmount() == null) {
+                throw new IllegalStateException("Flight cost is missing.");
+            }
+
+            float newBalance = customer.getAccountBalance() - flight.getAmount();
+            if (newBalance < 0) {
+                throw new IllegalStateException("Insufficient balance for the transaction.");
+            }
+
+            updateCustomerBalance(customer.getId(), flight.getAmount(), "-");
+
+            payment.setPaymentStatus(true);
+
+            payments.add(payment);
         }
-
-        float newBalance = customer.getAccountBalance() - flight.getAmount();
-        if (newBalance < 0) {
-            throw new IllegalStateException("Insufficient balance for the transaction.");
-        }
-
-        updateCustomerBalance(customer.getId(), flight.getAmount(), "-");
-
-        payment.setPaymentStatus(true);
-        return paymentGatewayRepository.save(payment);
+        return paymentGatewayRepository.saveAll(payments);
     }
 
     @Override

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/payments")
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -21,10 +23,10 @@ public class PaymentGatewayController {
         return paymentGatewayService.createPayment(paymentDTO);
     }
 
-    @PostMapping("/initiate/{paymentId}")
-    public ResponseEntity<PaymentGateway> initiatePayment(@PathVariable Long paymentId) {
+    @PostMapping("/initiate")
+    public ResponseEntity<List<PaymentGateway>> initiatePayment(List<Long> paymentIds) {
         try {
-            PaymentGateway payment = paymentGatewayService.initiatePayment(paymentId);
+            List<PaymentGateway> payment = paymentGatewayService.initiatePayment(paymentIds);
             return ResponseEntity.ok(payment);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
