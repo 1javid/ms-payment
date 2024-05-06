@@ -24,7 +24,7 @@ public class PaymentGatewayController {
     }
 
     @PostMapping("/initiate")
-    public ResponseEntity<List<PaymentGateway>> initiatePayment(List<Long> paymentIds) {
+    public ResponseEntity<List<PaymentGateway>> initiatePayment(@RequestBody List<Long> paymentIds) {
         try {
             List<PaymentGateway> payment = paymentGatewayService.initiatePayment(paymentIds);
             return ResponseEntity.ok(payment);
