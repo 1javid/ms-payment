@@ -13,6 +13,6 @@ public interface CustomerClient {
 
     @GetMapping("/customers/{id}")
     RegisteredCustomerDTO getCustomerById(@PathVariable("id") Long id);
-    @PostMapping("/customers/{customerId}/updateBalance")
-    void updateCustomerBalance(@PathVariable("customerId") Long customerId, @RequestBody UpdateBalanceDTO updateBalanceDTO);
+    @PostMapping("/customers/{customerId}/flightPayment")
+    void flightPaymentBalance(@PathVariable("customerId") Long customerId, @RequestBody UpdateBalanceDTO updateBalanceDTO);
 }

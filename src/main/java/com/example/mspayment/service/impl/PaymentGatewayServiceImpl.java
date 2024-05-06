@@ -78,6 +78,6 @@ public class PaymentGatewayServiceImpl implements PaymentGatewayService {
 
     private void updateCustomerBalance(Long customerId, Float newBalance, String operation) {
         UpdateBalanceDTO updateBalanceDTO = new UpdateBalanceDTO(newBalance, operation);
-        customerClient.updateCustomerBalance(customerId, updateBalanceDTO);
+        customerClient.flightPaymentBalance(customerId, updateBalanceDTO);
     }
 }
