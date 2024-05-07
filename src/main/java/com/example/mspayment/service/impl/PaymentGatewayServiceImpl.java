@@ -36,12 +36,11 @@ public class PaymentGatewayServiceImpl implements PaymentGatewayService {
     }
 
     @Override
-    public List<PaymentGateway> initiatePayment(List<Long> paymentIds) {
+    public List<PaymentGateway> initiatePayment(List<Long> bookingIds) {
         List<PaymentGateway> payments = new ArrayList<>();
-        for(Long paymentId: paymentIds) {
-            PaymentGateway payment = paymentGatewayRepository.findById(paymentId)
-                    .orElseThrow(() -> new RuntimeException("Payment not found"));
-            BookingDTO booking = bookingClient.getBookingById(payment.getBookingId());
+        for(Long bookingId: bookingIds) {
+            BookingDTO booking = bookingClient.getBookingById(bookingId);
+            PaymentGateway payment = paymentGatewayRepository.findByBookingId(booking.getId());
             FlightDTO flight = bookingClient.getFlightById(booking.getFlightId());
             RegisteredCustomerDTO customer = customerClient.getCustomerById(booking.getCustomerId());
 
